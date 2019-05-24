@@ -13,14 +13,12 @@ bool solveSudoku(int, int);
 
 void loadFile()
 {
-
 	fstream file(fileName.c_str());
 	if(file.good()==false)
 	{
 		cout<<"Failed to load the file"<<endl;
 		exit(0);
 	}
-	
 	for(int i=0;i<gameboardSize;i++)
 	{
 		for(int j=0;j<gameboardSize;j++)
@@ -130,7 +128,6 @@ bool solveSudoku(int x, int y)
 		return solveSudoku(0, y+1);
 	if (currentCell != empty)
 		return solveSudoku(x+1, y);
-		
 	if(foundPossibleNumberToPutInCell(x, y))
 		return true;
 	return false;
@@ -142,6 +139,5 @@ int main(){
 	printGameboard();
 	cout<<"Finished gameboard:"<<endl;
 	solveSudoku(0, 0);
-
 	return 0;
 }
