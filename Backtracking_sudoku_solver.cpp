@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <list>
 using namespace std;
 
 const int gameboardSize = 9;
