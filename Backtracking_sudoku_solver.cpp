@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include "Backtracking_sudoku_solver.h"
 using namespace std;
 
 const int gameboardSize = 9;
@@ -9,7 +10,14 @@ const int empty = 0;
 const string fileName = "test2.txt";
 int gameboard[gameboardSize][gameboardSize];
 
-bool solveSudoku(int, int);
+int main(){
+	loadFile();
+	cout<<"Your starting gameboard:"<<endl;
+	printGameboard();
+	cout<<"Finished gameboard:"<<endl;
+	solveSudoku(0, 0);
+	return 0;
+}
 
 void loadFile()
 {
@@ -45,50 +53,18 @@ void printGameboard()
 	cout<<endl<<endl;
 }
 
-bool rowHasThatNumber(int x, int y, int possibleNumberToPutInCell)
+bool solveSudoku(int x, int y)
 {
-	for(int i=0;i<gameboardSize;i++)
-	{
-		int numberInRow = gameboard[y][i];
-		if(numberInRow == possibleNumberToPutInCell)
-			return true;
-	}
+	int currentCell = gameboard[y][x];
+	if (isEnded(y))
+		return true;
+	if (x > boundary)
+		return solveSudoku(0, y+1);
+	if (currentCell != empty)
+		return solveSudoku(x+1, y);
+	if(foundPossibleNumberToPutInCell(x, y))
+		return true;
 	return false;
-}
-bool columnHasThatNumber(int x, int y, int possibleNumberToPutInCell)
-{
-	for(int i=0;i<gameboardSize;i++)
-	{
-		int numberInColumn = gameboard[i][x];
-		if(numberInColumn == possibleNumberToPutInCell)
-			return true;
-	}
-	return false;
-}
-bool subsquareHasThatNumber(int x, int y, int possibleNumberToPutInCell)
-{
-	int startingCellOfSquareHorizontal = x - x%squareSize;
-	int startingCellOfSquareVertical = y - y%squareSize;
-	for(int i=0;i<squareSize;i++)
-	{
-		for(int j=0;j<squareSize;j++)
-		{
-			int currentCellInSquare = gameboard[startingCellOfSquareVertical + i][startingCellOfSquareHorizontal + j];
-			if (currentCellInSquare == possibleNumberToPutInCell)
-				return true;
-		}
-	}
-	return false;
-}
-bool isPossibleToPutInCell(int x, int y, int possibleNumberToPutInCell)
-{
-	if (rowHasThatNumber(x, y, possibleNumberToPutInCell))
-		return false;
-	if (columnHasThatNumber(x, y, possibleNumberToPutInCell))
-		return false;
-	if (subsquareHasThatNumber(x, y, possibleNumberToPutInCell))
-		return false;
-	return true;
 }
 
 bool isEnded(int y)
@@ -119,25 +95,60 @@ bool foundPossibleNumberToPutInCell(int x, int y)
 	return false;
 }
 
-bool solveSudoku(int x, int y)
+bool isPossibleToPutInCell(int x, int y, int possibleNumberToPutInCell)
 {
-	int currentCell = gameboard[y][x];
-	if (isEnded(y))
-		return true;
-	if (x > boundary)
-		return solveSudoku(0, y+1);
-	if (currentCell != empty)
-		return solveSudoku(x+1, y);
-	if(foundPossibleNumberToPutInCell(x, y))
-		return true;
+	if (rowHasThatNumber(x, y, possibleNumberToPutInCell))
+		return false;
+	if (columnHasThatNumber(x, y, possibleNumberToPutInCell))
+		return false;
+	if (subsquareHasThatNumber(x, y, possibleNumberToPutInCell))
+		return false;
+	return true;
+}
+
+bool rowHasThatNumber(int x, int y, int possibleNumberToPutInCell)
+{
+	for(int i=0;i<gameboardSize;i++)
+	{
+		int numberInRow = gameboard[y][i];
+		if(numberInRow == possibleNumberToPutInCell)
+			return true;
+	}
 	return false;
 }
 
-int main(){
-	loadFile();
-	cout<<"Your starting gameboard:"<<endl;
-	printGameboard();
-	cout<<"Finished gameboard:"<<endl;
-	solveSudoku(0, 0);
-	return 0;
+bool columnHasThatNumber(int x, int y, int possibleNumberToPutInCell)
+{
+	for(int i=0;i<gameboardSize;i++)
+	{
+		int numberInColumn = gameboard[i][x];
+		if(numberInColumn == possibleNumberToPutInCell)
+			return true;
+	}
+	return false;
 }
+
+bool subsquareHasThatNumber(int x, int y, int possibleNumberToPutInCell)
+{
+	int startingCellOfSquareHorizontal = x - x%squareSize;
+	int startingCellOfSquareVertical = y - y%squareSize;
+	for(int i=0;i<squareSize;i++)
+	{
+		for(int j=0;j<squareSize;j++)
+		{
+			int currentCellInSquare = gameboard[startingCellOfSquareVertical + i][startingCellOfSquareHorizontal + j];
+			if (currentCellInSquare == possibleNumberToPutInCell)
+				return true;
+		}
+	}
+	return false;
+}
+
+
+
+
+
+
+
+
+
