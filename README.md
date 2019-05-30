@@ -8,3 +8,5 @@ test1.txt consists simple test gameboard.
 test2.txt consists harder case.
 
 test3.txt consists empty gameboard.
+
+test4.txt consists fully filled gameboard.
