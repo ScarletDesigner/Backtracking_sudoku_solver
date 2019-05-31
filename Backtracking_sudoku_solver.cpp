@@ -2,25 +2,34 @@
 #include <fstream>
 using namespace std;
 
-const string fileName = "test2.txt";
+class FileLoader {
 	
-class Sudoku
-{
+protected:
+	
 	static const int gameboardSize = 9;
-	static const int boundary = gameboardSize - 1;
-	static const int subsquareSize = 3;
-	static const int empty = 0;
 	int gameboard[gameboardSize][gameboardSize];
+	fstream file;
 	
-public:
-	void loadFile()
+	void loadFile(string fileName)
 	{
-		fstream file(fileName.c_str());
-		if(file.good()==false)
+		file.open(fileName.c_str());
+		checkIfFileExists();
+		importFileIntoGameboard();
+		file.close();
+	}
+	
+private:
+	
+	checkIfFileExists()
+	{
+		if(file.good() == false)
 		{
 			cout<<"Failed to load the file"<<endl;
 			exit(0);
 		}
+	}
+	importFileIntoGameboard()
+	{
 		for(int i=0;i<gameboardSize;i++)
 		{
 			for(int j=0;j<gameboardSize;j++)
@@ -31,8 +40,12 @@ public:
 				gameboard[i][j] = valueOfCell;
 			}
 		}
-		file.close();
 	}
+};
+
+class GameboardPrinter: public FileLoader {
+	
+protected:
 	
 	void printGameboard()
 	{	
@@ -46,6 +59,15 @@ public:
 		}
 		cout<<endl<<endl;
 	}
+};
+
+class SudokuSolver : public GameboardPrinter {
+
+	static const int boundary = gameboardSize - 1;
+	static const int subsquareSize = 3;
+	static const int empty = 0;
+	
+protected:
 	
 	bool solveSudoku(int x, int y)
 	{
@@ -56,10 +78,12 @@ public:
 			return solveSudoku(0, y+1);
 		if (currentCell != empty)
 			return solveSudoku(x+1, y);
-		if(foundPossibleNumberToPutInCell(x, y))
+		if (foundPossibleNumberToPutInCell(x, y))
 			return true;
 		return false;
 	}
+	
+private:
 	
 	bool isEnded(int y)
 	{
@@ -85,7 +109,7 @@ public:
 				}
 			}
 		}
-		gameboard[y][x] = empty;
+		resetCellToDefault(x, y);
 		return false;
 	}
 	
@@ -138,14 +162,31 @@ public:
 		return false;
 	}
 	
+	resetCellToDefault(int x, int y)
+	{
+		gameboard[y][x] = empty;
+	}
+			
+};
+
+class Sudoku: public SudokuSolver {
+	
+public:
+	
+	Sudoku(string fileName)
+	{
+		loadFile(fileName);
+		cout<<"Your starting gameboard:"<<endl;
+		printGameboard();
+		cout<<"Finished gameboard:"<<endl;
+		solveSudoku(0, 0);
+	}
+
 };
 
 int main(){
-	Sudoku game;
-	game.loadFile();
-	cout<<"Your starting gameboard:"<<endl;
-	game.printGameboard();
-	cout<<"Finished gameboard:"<<endl;
-	game.solveSudoku(0, 0);
+	
+	Sudoku s("test2.txt");
+
 	return 0;
 }
