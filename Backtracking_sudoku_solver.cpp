@@ -66,6 +66,7 @@ class SudokuSolver : public GameboardPrinter {
 	static const int boundary = gameboardSize - 1;
 	static const int subsquareSize = 3;
 	static const int empty = 0;
+	int possibleNumberToPutInCell;
 	
 protected:
 	
@@ -99,7 +100,8 @@ private:
 	{
 		for(int possibleNumber=1; possibleNumber <= gameboardSize; possibleNumber++)
 		{
-			if(isPossibleToPutInCell(x, y, possibleNumber))
+			possibleNumberToPutInCell = possibleNumber;
+			if(isPossibleToPutInCell(x, y))
 			{
 				gameboard[y][x] = possibleNumber;
 				bool nextEmptyCell = solveSudoku(x+1, y);
@@ -113,18 +115,18 @@ private:
 		return false;
 	}
 	
-	bool isPossibleToPutInCell(int x, int y, int possibleNumberToPutInCell)
+	bool isPossibleToPutInCell(int x, int y)
 	{
-		if (rowHasThatNumber(x, y, possibleNumberToPutInCell))
+		if (rowHasThatNumber(x, y))
 			return false;
-		if (columnHasThatNumber(x, y, possibleNumberToPutInCell))
+		if (columnHasThatNumber(x, y))
 			return false;
-		if (subsquareHasThatNumber(x, y, possibleNumberToPutInCell))
+		if (subsquareHasThatNumber(x, y))
 			return false;
 		return true;
 	}
 
-	bool rowHasThatNumber(int x, int y, int possibleNumberToPutInCell)
+	bool rowHasThatNumber(int x, int y)
 	{
 		for(int i=0;i<gameboardSize;i++)
 		{
@@ -135,7 +137,7 @@ private:
 		return false;
 	}
 
-	bool columnHasThatNumber(int x, int y, int possibleNumberToPutInCell)
+	bool columnHasThatNumber(int x, int y)
 	{
 		for(int i=0;i<gameboardSize;i++)
 		{
@@ -146,7 +148,7 @@ private:
 		return false;
 	}
 
-	bool subsquareHasThatNumber(int x, int y, int possibleNumberToPutInCell)
+	bool subsquareHasThatNumber(int x, int y)
 	{
 		int startingCellOfSubsquareHorizontal = x - x%subsquareSize;
 		int startingCellOfSubsquareVertical = y - y%subsquareSize;
