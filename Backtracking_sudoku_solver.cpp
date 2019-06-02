@@ -5,7 +5,6 @@ using namespace std;
 class FileLoader {
 	
 protected:
-	
 	static const int gameboardSize = 9;
 	int gameboard[gameboardSize][gameboardSize];
 	fstream file;
@@ -19,7 +18,6 @@ protected:
 	}
 	
 private:
-	
 	checkIfFileExists()
 	{
 		if(file.good() == false)
@@ -28,6 +26,7 @@ private:
 			exit(0);
 		}
 	}
+	
 	importFileIntoGameboard()
 	{
 		for(int i=0;i<gameboardSize;i++)
@@ -46,7 +45,6 @@ private:
 class GameboardPrinter: public FileLoader {
 	
 protected:
-	
 	void printGameboard()
 	{	
 		for(int i=0;i<gameboardSize;i++)
@@ -67,26 +65,32 @@ class SudokuSolver : public GameboardPrinter {
 	static const int subsquareSize = 3;
 	static const int empty = 0;
 	int possibleNumberToPutInCell;
+	int x, y;
 	
 protected:
-	
 	bool solveSudoku(int x, int y)
 	{
+		this -> x = x;
+		this -> y = y;
 		int currentCell = gameboard[y][x];
-		if (isEnded(y))
+		
+		if (isEnded())
 			return true;
+			
 		if (x > boundary)
-			return solveSudoku(0, y+1);
+			return solveSudoku(0, y + 1);
+			
 		if (currentCell != empty)
-			return solveSudoku(x+1, y);
-		if (foundPossibleNumberToPutInCell(x, y))
+			return solveSudoku(x + 1, y);
+			
+		if (hasSolutionForCurrentCell(x, y))
 			return true;
+			
 		return false;
 	}
 	
 private:
-	
-	bool isEnded(int y)
+	bool isEnded()
 	{
 		if (y > boundary)
 		{
@@ -96,37 +100,47 @@ private:
 		return false;
 	}
 
-	bool foundPossibleNumberToPutInCell(int x, int y)
+	bool hasSolutionForCurrentCell(int x, int y)
 	{
-		for(int possibleNumber=1; possibleNumber <= gameboardSize; possibleNumber++)
+		for(int i = 1; i <= gameboardSize; i++)
 		{
-			possibleNumberToPutInCell = possibleNumber;
+			possibleNumberToPutInCell = i;
 			if(isPossibleToPutInCell(x, y))
 			{
-				gameboard[y][x] = possibleNumber;
-				bool nextEmptyCell = solveSudoku(x+1, y);
-				if(nextEmptyCell)
-				{
+				replaceCellWithPossibleNumber();
+				bool nextCellHasSolution = solveSudoku(x+1, y);
+				if(nextCellHasSolution)
 					return true;
-				}
 			}
 		}
 		resetCellToDefault(x, y);
 		return false;
 	}
 	
+	void resetCellToDefault(int x, int y)
+	{
+		gameboard[y][x] = empty;
+	}
+	void replaceCellWithPossibleNumber()
+	{
+		gameboard[y][x] = possibleNumberToPutInCell;
+	}
+	
+	
 	bool isPossibleToPutInCell(int x, int y)
 	{
-		if (rowHasThatNumber(x, y))
+		this -> x = x;
+		this -> y = y;
+		if (rowHasThatNumber())
 			return false;
-		if (columnHasThatNumber(x, y))
+		if (columnHasThatNumber())
 			return false;
-		if (subsquareHasThatNumber(x, y))
+		if (subsquareHasThatNumber())
 			return false;
 		return true;
 	}
 
-	bool rowHasThatNumber(int x, int y)
+	bool rowHasThatNumber()
 	{
 		for(int i=0;i<gameboardSize;i++)
 		{
@@ -137,9 +151,9 @@ private:
 		return false;
 	}
 
-	bool columnHasThatNumber(int x, int y)
+	bool columnHasThatNumber()
 	{
-		for(int i=0;i<gameboardSize;i++)
+		for(int i = 0; i < gameboardSize; i++)
 		{
 			int numberInColumn = gameboard[i][x];
 			if(numberInColumn == possibleNumberToPutInCell)
@@ -148,13 +162,13 @@ private:
 		return false;
 	}
 
-	bool subsquareHasThatNumber(int x, int y)
+	bool subsquareHasThatNumber()
 	{
 		int startingCellOfSubsquareHorizontal = x - x%subsquareSize;
 		int startingCellOfSubsquareVertical = y - y%subsquareSize;
-		for(int i=0;i<subsquareSize;i++)
+		for(int i=0; i < subsquareSize; i++)
 		{
-			for(int j=0;j<subsquareSize;j++)
+			for(int j=0; j < subsquareSize; j++)
 			{
 				int currentCellInSubsquare = gameboard[startingCellOfSubsquareVertical + i][startingCellOfSubsquareHorizontal + j];
 				if (currentCellInSubsquare == possibleNumberToPutInCell)
@@ -164,17 +178,11 @@ private:
 		return false;
 	}
 	
-	resetCellToDefault(int x, int y)
-	{
-		gameboard[y][x] = empty;
-	}
-			
 };
 
 class Sudoku: public SudokuSolver {
 	
 public:
-	
 	Sudoku(string fileName)
 	{
 		loadFile(fileName);
@@ -188,7 +196,7 @@ public:
 
 int main(){
 	
-	Sudoku s("test2.txt");
+	Sudoku s("test1.txt");
 
 	return 0;
 }
